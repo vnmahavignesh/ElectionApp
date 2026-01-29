@@ -308,29 +308,93 @@ function renderTable() {
     pagination.appendChild(nextBtn);
 }
 
-// Edit voter
+// Edit voter - open modal
 function editVoter(index) {
     editingIndex = index;
     const voter = voters[index];
 
-    const form = document.getElementById('voterForm');
-    form.classList.remove('was-validated'); // Remove validation state when editing
+    // Fill modal form fields
+    document.getElementById('edit_name').value = voter.name;
+    document.getElementById('edit_dob').value = voter.dob;
+    document.getElementById('edit_age').value = voter.age || '';
+    document.getElementById('edit_eligibility').value = voter.eligibility || 'Yes';
+    document.getElementById('edit_voterId').value = voter.voterId;
+    document.getElementById('edit_phone').value = voter.phone;
+    document.getElementById('edit_district').value = voter.district;
+    document.getElementById('edit_city').value = voter.city;
+    document.getElementById('edit_area').value = voter.area;
+    document.getElementById('edit_street').value = voter.street;
+    document.getElementById('edit_pincode').value = voter.pincode;
+    document.getElementById('edit_address').value = voter.address;
 
-    document.getElementById('name').value = voter.name;
-    document.getElementById('dob').value = voter.dob;
-    document.getElementById('age').value = voter.age || '';
-    document.getElementById('eligibility').value = voter.eligibility || 'Yes';
-    document.getElementById('voterId').value = voter.voterId;
-    document.getElementById('phone').value = voter.phone;
-    document.getElementById('district').value = voter.district;
-    document.getElementById('city').value = voter.city;
-    document.getElementById('area').value = voter.area;
-    document.getElementById('street').value = voter.street;
-    document.getElementById('pincode').value = voter.pincode;
-    document.getElementById('address').value = voter.address;
+    // Remove validation state
+    document.getElementById('editVoterForm').classList.remove('was-validated');
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Show modal
+    document.getElementById('editVoterModal').classList.add('active');
 }
+
+// Modal close button
+document.getElementById('closeEditModal').addEventListener('click', function () {
+    document.getElementById('editVoterModal').classList.remove('active');
+});
+
+// Close modal on overlay click (optional, not on modal content)
+document.getElementById('editVoterModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        this.classList.remove('active');
+    }
+});
+
+// Calculate age and set eligibility in edit modal
+document.getElementById('edit_dob').addEventListener('change', (e) => {
+    const dob = new Date(e.target.value);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    document.getElementById('edit_age').value = age;
+    // Set eligibility based on age
+    const eligibilitySelect = document.getElementById('edit_eligibility');
+    if (age >= 18) {
+        eligibilitySelect.value = 'Yes';
+    } else {
+        eligibilitySelect.value = 'No';
+    }
+});
+
+// Edit voter form submission
+document.getElementById('editVoterForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    form.classList.add('was-validated');
+    if (!form.checkValidity()) {
+        showToast('Please fill in all required fields correctly', 'error');
+        return;
+    }
+    if (editingIndex < 0) return;
+    const updatedVoter = {
+        name: document.getElementById('edit_name').value,
+        dob: document.getElementById('edit_dob').value,
+        age: document.getElementById('edit_age').value,
+        eligibility: document.getElementById('edit_eligibility').value,
+        voterId: document.getElementById('edit_voterId').value,
+        phone: document.getElementById('edit_phone').value,
+        district: document.getElementById('edit_district').value,
+        city: document.getElementById('edit_city').value,
+        area: document.getElementById('edit_area').value,
+        street: document.getElementById('edit_street').value,
+        pincode: document.getElementById('edit_pincode').value,
+        address: document.getElementById('edit_address').value
+    };
+    voters[editingIndex] = updatedVoter;
+    editingIndex = -1;
+    renderTable();
+    document.getElementById('editVoterModal').classList.remove('active');
+    showToast('Voter record updated successfully!', 'success');
+});
 
 // Delete voter
 function deleteVoter(index) {

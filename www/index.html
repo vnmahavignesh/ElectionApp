@@ -98,6 +98,86 @@
             </form>
         </div>
 
+        <!-- Edit Voter Modal -->
+        <div id="editVoterModal" class="modal-overlay">
+            <div class="modal-content">
+                <button class="modal-close" id="closeEditModal">×</button>
+                <h2>Edit Voter Details</h2>
+                <form id="editVoterForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="edit_name">Full Name *</label>
+                            <input type="text" id="edit_name" name="edit_name" required>
+                            <span class="error-message">Please enter full name</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_dob">Date of Birth *</label>
+                            <input type="date" id="edit_dob" name="edit_dob" required>
+                            <span class="error-message">Please select date of birth</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_age">Age</label>
+                            <input type="number" id="edit_age" name="edit_age" readonly style="background: #e8e4df;">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_eligibility">Voter Eligibility *</label>
+                            <select id="edit_eligibility" name="edit_eligibility" required>
+                                <option value="" selected disabled>Select</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                            <span class="error-message">Please select voter eligibility</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_voterId">Voter ID Number *</label>
+                            <input type="text" id="edit_voterId" name="edit_voterId" required>
+                            <span class="error-message">Please enter voter ID number</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_phone">Phone Number *</label>
+                            <input type="tel" id="edit_phone" name="edit_phone" required>
+                            <span class="error-message">Please enter phone number</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_district">District *</label>
+                            <input type="text" id="edit_district" name="edit_district" required>
+                            <span class="error-message">Please enter district</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_city">City *</label>
+                            <input type="text" id="edit_city" name="edit_city" required>
+                            <span class="error-message">Please enter city</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_area">Area *</label>
+                            <input type="text" id="edit_area" name="edit_area" required>
+                            <span class="error-message">Please enter area</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_street">Street Name *</label>
+                            <input type="text" id="edit_street" name="edit_street" required>
+                            <span class="error-message">Please enter street name</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_pincode">Pincode *</label>
+                            <input type="text" id="edit_pincode" name="edit_pincode" pattern="[0-9]{6}" required>
+                            <span class="error-message">Please enter valid 6-digit pincode</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_address">Full Address</label>
+                            <textarea id="edit_address" name="edit_address"
+                                placeholder="Complete address..."></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span>✔</span> Update Voter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="table-section">
             <div class="table-header">
                 <h2 class="section-title">Registered Voters</h2>
