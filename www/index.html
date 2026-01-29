@@ -196,10 +196,14 @@
                     <button class="btn btn-secondary" id="exportBtn">
                         <span>↓</span> Export CSV
                     </button>
-                    <label for="importFile" class="file-upload-label">
+                    <!-- Import button - UPDATED -->
+                    <button type="button" class="file-upload-label" onclick="triggerImportCSV()">
                         <span>↑</span> Import CSV
-                    </label>
-                    <input type="file" id="importFile" accept=".csv">
+                    </button>
+
+                    <!-- Hidden file input for web browser fallback -->
+                    <input type="file" id="importFile"
+                        accept=".csv,text/csv,application/csv,text/comma-separated-values" style="display: none;">
                 </div>
             </div>
 
