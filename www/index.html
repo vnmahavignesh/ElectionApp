@@ -17,117 +17,116 @@
     <div class="container">
         <header>
             <h1>Voter Registration System</h1>
-            <p class="subtitle">Secure and Efficient Digital Voter Management</p>
+            <p class="subtitle">Register and manage voter information efficiently</p>
         </header>
 
-        <section class="form-section">
-            <h2 class="section-title">Register New Voter</h2>
+        <div class="form-section">
+            <h2 class="section-title">Registration Form</h2>
             <form id="voterForm">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="name">Full Name *</label>
-                        <input type="text" id="name" required placeholder="Enter full name">
+                        <input type="text" id="name" name="name" required>
+                        <span class="error-message">Please enter full name</span>
                     </div>
-
                     <div class="form-group">
                         <label for="dob">Date of Birth *</label>
-                        <input type="date" id="dob" required>
+                        <input type="date" id="dob" name="dob" required>
+                        <span class="error-message">Please select date of birth</span>
                     </div>
-
                     <div class="form-group">
                         <label for="age">Age</label>
-                        <input type="number" id="age" readonly placeholder="Auto-calculated">
+                        <input type="number" id="age" name="age" readonly style="background: #e8e4df;">
                     </div>
-
                     <div class="form-group">
-                        <label for="eligibility">Voter *</label>
-                        <select id="eligibility" required>
-                            <option value="" selected>Select</option>
+                        <label for="eligibility">Voter Eligibility *</label>
+                        <select id="eligibility" name="eligibility" required>
+                            <option value="" selected disabled>Select</option>
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                         </select>
+                        <span class="error-message">Please select voter eligibility</span>
                     </div>
-
                     <div class="form-group">
-                        <label for="voterId">Voter ID *</label>
-                        <input type="text" id="voterId" required placeholder="Enter voter ID">
+                        <label for="voterId">Voter ID Number *</label>
+                        <input type="text" id="voterId" name="voterId" required>
+                        <span class="error-message">Please enter voter ID number</span>
                     </div>
-
                     <div class="form-group">
                         <label for="phone">Phone Number *</label>
-                        <input type="tel" id="phone" required placeholder="Enter phone number">
+                        <input type="tel" id="phone" name="phone" required>
+                        <span class="error-message">Please enter phone number</span>
                     </div>
-
                     <div class="form-group">
                         <label for="district">District *</label>
-                        <input type="text" id="district" required placeholder="Enter district">
+                        <input type="text" id="district" name="district" required>
+                        <span class="error-message">Please enter district</span>
                     </div>
-
                     <div class="form-group">
                         <label for="city">City *</label>
-                        <input type="text" id="city" required placeholder="Enter city">
+                        <input type="text" id="city" name="city" required>
+                        <span class="error-message">Please enter city</span>
                     </div>
-
                     <div class="form-group">
                         <label for="area">Area *</label>
-                        <input type="text" id="area" required placeholder="Enter area">
+                        <input type="text" id="area" name="area" required>
+                        <span class="error-message">Please enter area</span>
                     </div>
-
                     <div class="form-group">
-                        <label for="street">Street *</label>
-                        <input type="text" id="street" required placeholder="Enter street">
+                        <label for="street">Street Name *</label>
+                        <input type="text" id="street" name="street" required>
+                        <span class="error-message">Please enter street name</span>
                     </div>
-
                     <div class="form-group">
                         <label for="pincode">Pincode *</label>
-                        <input type="text" id="pincode" required placeholder="Enter pincode" pattern="[0-9]{6}">
+                        <input type="text" id="pincode" name="pincode" pattern="[0-9]{6}" required>
+                        <span class="error-message">Please enter valid 6-digit pincode</span>
                     </div>
-
-                    <div class="form-group" style="grid-column: 1 / -1;">
+                    <div class="form-group">
                         <label for="address">Full Address</label>
-                        <textarea id="address" placeholder="Enter complete address (optional)"></textarea>
+                        <textarea id="address" name="address" placeholder="Complete address..."></textarea>
                     </div>
                 </div>
-
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="resetForm">Reset Form</button>
-                    <button type="submit" class="btn btn-primary">Register Voter</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>➤</span> Submit Registration
+                    </button>
+                    <button type="button" class="btn btn-success" id="saveChangesBtn">
+                        <span>💾</span> Save Changes
+                    </button>
                 </div>
             </form>
-        </section>
+        </div>
 
-        <section class="table-section">
+        <div class="table-section">
             <div class="table-header">
                 <h2 class="section-title">Registered Voters</h2>
                 <div class="table-controls">
                     <div class="rows-selector">
                         <label for="rowsPerPage">Show:</label>
                         <select id="rowsPerPage">
-                            <option value="5">5 rows</option>
-                            <option value="10" selected>10 rows</option>
-                            <option value="25">25 rows</option>
+                            <option value="10">10 rows</option>
+                            <option value="20">20 rows</option>
                             <option value="50">50 rows</option>
                             <option value="100">100 rows</option>
                         </select>
                     </div>
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Search voters...">
-                    </div>
-                    <button class="btn btn-success" id="exportCSV">Export CSV</button>
-                    <button class="btn btn-secondary" id="printTable">Print</button>
-                    <label for="importCSV" class="btn btn-primary" style="margin: 0;">
-                        Import CSV
-                        <input type="file" id="importCSV" accept=".csv" style="display: none;">
+                    <button class="btn btn-secondary" id="exportBtn">
+                        <span>↓</span> Export CSV
+                    </button>
+                    <label for="importFile" class="file-upload-label">
+                        <span>↑</span> Import CSV
                     </label>
+                    <input type="file" id="importFile" accept=".csv">
                 </div>
             </div>
 
             <div class="table-wrapper">
-                <table>
+                <table id="votersTable">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Date of Birth</th>
+                            <th>DOB</th>
                             <th>Age</th>
                             <th>Eligibility</th>
                             <th>Voter ID</th>
@@ -152,8 +151,16 @@
             </div>
 
             <div class="pagination" id="pagination"></div>
-        </section>
+        </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span class="toast-icon" id="toastIcon">✓</span>
+        <span class="toast-message" id="toastMessage"></span>
+        <button class="toast-close" onclick="hideToast()">×</button>
+    </div>
+
     <script src="cordova.js"></script>
     <script src="js/script.js"></script>
     <script src="js/index.js"></script>

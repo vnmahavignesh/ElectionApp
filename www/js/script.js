@@ -1,18 +1,54 @@
-// State variables
+// Toast notification system
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastMessage = document.getElementById('toastMessage');
+
+    // Set icon based on type
+    if (type === 'success') {
+        toastIcon.textContent = '✓';
+        toast.classList.remove('error');
+        toast.classList.add('success');
+    } else if (type === 'error') {
+        toastIcon.textContent = '⚠';
+        toast.classList.remove('success');
+        toast.classList.add('error');
+    }
+
+    toastMessage.textContent = message;
+    toast.classList.add('show');
+
+    // Auto hide after 3 seconds
+    setTimeout(() => {
+        hideToast();
+    }, 3000);
+}
+
+function hideToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.remove('show');
+}
+
+// Data storage
 let voters = [];
-let editingIndex = -1;
 let currentPage = 1;
 let rowsPerPage = 10;
+let editingIndex = -1;
 
-// Load data on page load
+// Load data from localStorage on page load
 window.addEventListener('DOMContentLoaded', () => {
     loadFromStorage();
     renderTable();
+
+    // Show notification if data was loaded
+    if (voters.length > 0) {
+        showToast(`Loaded ${voters.length} voter records from storage`, 'success');
+    }
 });
 
-// Calculate age from date of birth
-document.getElementById('dob').addEventListener('change', function () {
-    const dob = new Date(this.value);
+// Calculate age and set eligibility when DOB changes
+document.getElementById('dob').addEventListener('change', (e) => {
+    const dob = new Date(e.target.value);
     const today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
     const monthDiff = today.getMonth() - dob.getMonth();
@@ -23,7 +59,7 @@ document.getElementById('dob').addEventListener('change', function () {
 
     document.getElementById('age').value = age;
 
-    // Auto-set eligibility based on age
+    // Set eligibility based on age
     const eligibilitySelect = document.getElementById('eligibility');
     if (age >= 18) {
         eligibilitySelect.value = 'Yes';
@@ -33,17 +69,21 @@ document.getElementById('dob').addEventListener('change', function () {
 });
 
 // Form submission
-document.getElementById('voterForm').addEventListener('submit', function (e) {
+document.getElementById('voterForm').addEventListener('submit', (e) => {
     e.preventDefault();
 
     const form = e.target;
+
+    // Add validation class to show errors
+    form.classList.add('was-validated');
+
+    // Check if form is valid
     if (!form.checkValidity()) {
-        form.classList.add('was-validated');
-        showToast('Please fill in all required fields correctly.', 'error');
+        showToast('Please fill in all required fields correctly', 'error');
         return;
     }
 
-    const voter = {
+    const formData = {
         name: document.getElementById('name').value,
         dob: document.getElementById('dob').value,
         age: document.getElementById('age').value,
@@ -59,83 +99,40 @@ document.getElementById('voterForm').addEventListener('submit', function (e) {
     };
 
     if (editingIndex >= 0) {
-        voters[editingIndex] = voter;
+        voters[editingIndex] = formData;
         editingIndex = -1;
         showToast('Voter record updated successfully!', 'success');
     } else {
-        voters.push(voter);
+        voters.push(formData);
         showToast('Voter registered successfully!', 'success');
     }
 
     form.reset();
     form.classList.remove('was-validated');
+    renderTable();
+});
+
+// Save changes button
+document.getElementById('saveChangesBtn').addEventListener('click', () => {
     saveToStorage();
-    renderTable();
-});
-
-// Reset form
-document.getElementById('resetForm').addEventListener('click', function () {
-    editingIndex = -1;
-    document.getElementById('voterForm').reset();
-    document.getElementById('voterForm').classList.remove('was-validated');
-});
-
-// Toast notification
-function showToast(message, type = 'success') {
-    const existingToast = document.querySelector('.toast');
-    if (existingToast) {
-        existingToast.remove();
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = 'slideInRight 0.3s ease-out reverse';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// Search functionality
-document.getElementById('searchInput').addEventListener('input', function (e) {
-    const searchTerm = e.target.value.toLowerCase();
-
-    if (searchTerm === '') {
-        loadFromStorage();
-        renderTable();
-        return;
-    }
-
-    const allVoters = JSON.parse(localStorage.getItem('voterData') || '[]');
-    voters = allVoters.filter(voter =>
-        voter.name.toLowerCase().includes(searchTerm) ||
-        voter.voterId.toLowerCase().includes(searchTerm) ||
-        voter.phone.includes(searchTerm) ||
-        voter.district.toLowerCase().includes(searchTerm) ||
-        voter.city.toLowerCase().includes(searchTerm)
-    );
-
-    currentPage = 1;
-    renderTable();
+    showToast('Changes saved to local storage successfully!', 'success');
 });
 
 // Rows per page selector
-document.getElementById('rowsPerPage').addEventListener('change', function (e) {
+document.getElementById('rowsPerPage').addEventListener('change', (e) => {
     rowsPerPage = parseInt(e.target.value);
     currentPage = 1;
     renderTable();
 });
 
 // Export to CSV
-document.getElementById('exportCSV').addEventListener('click', function () {
+document.getElementById('exportBtn').addEventListener('click', () => {
     if (voters.length === 0) {
         showToast('No data to export!', 'error');
         return;
     }
 
-    const headers = ['Name', 'Date of Birth', 'Age', 'Eligibility', 'Voter ID', 'Phone', 'District', 'City', 'Area', 'Street', 'Pincode', 'Address'];
+    const headers = ['Name', 'DOB', 'Age', 'Eligibility', 'Voter ID', 'Phone', 'District', 'City', 'Area', 'Street', 'Pincode', 'Address'];
     const csvContent = [
         headers.join(','),
         ...voters.map(voter => [
@@ -158,70 +155,22 @@ document.getElementById('exportCSV').addEventListener('click', function () {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `voter_registration_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `voter_data_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    showToast('Data exported successfully!', 'success');
+    showToast(`Exported ${voters.length} voter records successfully!`, 'success');
 });
 
-// Print table
-document.getElementById('printTable').addEventListener('click', function () {
-    if (voters.length === 0) {
-        showToast('No data to print!', 'error');
-        return;
-    }
-
-    const printWindow = window.open('', '_blank');
-    const tableHTML = document.querySelector('.table-wrapper').innerHTML;
-
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Voter Registration Data</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 20px; }
-                table { width: 100%; border-collapse: collapse; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #1a3a52; color: white; }
-                tr:nth-child(even) { background-color: #f8f6f3; }
-                @media print {
-                    .actions-cell { display: none; }
-                    th:last-child, td:last-child { display: none; }
-                }
-            </style>
-        </head>
-        <body>
-            <h1>Voter Registration System</h1>
-            <p>Generated on: ${new Date().toLocaleString()}</p>
-            ${tableHTML}
-        </body>
-        </html>
-    `);
-
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-    }, 250);
-});
-
-// Import CSV
-document.getElementById('importCSV').addEventListener('change', function (e) {
+// Import from CSV
+document.getElementById('importFile').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-        showToast('Please select a valid CSV file!', 'error');
-        return;
-    }
-
     const reader = new FileReader();
-    reader.onload = function (event) {
+    reader.onload = (event) => {
         try {
             const csv = event.target.result;
             const lines = csv.split('\n');
@@ -270,13 +219,13 @@ function renderTable() {
 
     if (voters.length === 0) {
         tableBody.innerHTML = `
-            <tr>
-                <td colspan="12" class="empty-state">
-                    <div class="empty-state-icon">📋</div>
-                    <p>No voters registered yet. Fill out the form above to add your first entry.</p>
-                </td>
-            </tr>
-        `;
+                    <tr>
+                        <td colspan="12" class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <p>No voters registered yet. Fill out the form above to add your first entry.</p>
+                        </td>
+                    </tr>
+                `;
         pagination.innerHTML = '';
         return;
     }
@@ -290,26 +239,26 @@ function renderTable() {
         const actualIndex = startIndex + index;
         const eligibilityColor = voter.eligibility === 'Yes' ? '#4a9d7f' : '#c65d5d';
         return `
-            <tr>
-                <td>${voter.name}</td>
-                <td>${voter.dob}</td>
-                <td>${voter.age || 'N/A'}</td>
-                <td style="color: ${eligibilityColor}; font-weight: 600;">${voter.eligibility}</td>
-                <td>${voter.voterId}</td>
-                <td>${voter.phone}</td>
-                <td>${voter.district}</td>
-                <td>${voter.city}</td>
-                <td>${voter.area}</td>
-                <td>${voter.street}</td>
-                <td>${voter.pincode}</td>
-                <td>
-                    <div class="actions-cell">
-                        <button class="btn-icon btn-edit" onclick="editVoter(${actualIndex})">Edit</button>
-                        <button class="btn-icon btn-delete" onclick="deleteVoter(${actualIndex})">Delete</button>
-                    </div>
-                </td>
-            </tr>
-        `;
+                    <tr>
+                        <td>${voter.name}</td>
+                        <td>${voter.dob}</td>
+                        <td>${voter.age || 'N/A'}</td>
+                        <td style="color: ${eligibilityColor}; font-weight: 600;">${voter.eligibility}</td>
+                        <td>${voter.voterId}</td>
+                        <td>${voter.phone}</td>
+                        <td>${voter.district}</td>
+                        <td>${voter.city}</td>
+                        <td>${voter.area}</td>
+                        <td>${voter.street}</td>
+                        <td>${voter.pincode}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="btn-icon btn-edit" onclick="editVoter(${actualIndex})">Edit</button>
+                                <button class="btn-icon btn-delete" onclick="deleteVoter(${actualIndex})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
     }).join('');
 
     // Render pagination
