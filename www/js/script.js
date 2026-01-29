@@ -31,9 +31,11 @@ function hideToast() {
 
 // Data storage
 let voters = [];
+let filteredVoters = null; // For search
 let currentPage = 1;
 let rowsPerPage = 10;
 let editingIndex = -1;
+let searchQuery = '';
 
 // Load data from localStorage on page load
 window.addEventListener('DOMContentLoaded', () => {
@@ -43,6 +45,17 @@ window.addEventListener('DOMContentLoaded', () => {
     // Show notification if data was loaded
     if (voters.length > 0) {
         showToast(`Loaded ${voters.length} voter records from storage`, 'success');
+    }
+
+    // Attach search event handler
+    const searchInput = document.getElementById('searchVoterInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim().toLowerCase();
+            filterVoters();
+            currentPage = 1;
+            renderTable();
+        });
     }
 });
 
@@ -217,7 +230,10 @@ function renderTable() {
     const tableBody = document.getElementById('tableBody');
     const pagination = document.getElementById('pagination');
 
-    if (voters.length === 0) {
+    // Use filteredVoters if searching, else voters
+    const data = filteredVoters !== null ? filteredVoters : voters;
+
+    if (data.length === 0) {
         tableBody.innerHTML = `
                     <tr>
                         <td colspan="12" class="empty-state">
@@ -230,13 +246,13 @@ function renderTable() {
         return;
     }
 
-    const totalPages = Math.ceil(voters.length / rowsPerPage);
+    const totalPages = Math.ceil(data.length / rowsPerPage);
     const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = Math.min(startIndex + rowsPerPage, voters.length);
-    const currentVoters = voters.slice(startIndex, endIndex);
+    const endIndex = Math.min(startIndex + rowsPerPage, data.length);
+    const currentVoters = data.slice(startIndex, endIndex);
 
     tableBody.innerHTML = currentVoters.map((voter, index) => {
-        const actualIndex = startIndex + index;
+        const actualIndex = filteredVoters !== null ? voters.indexOf(voter) : startIndex + index;
         const eligibilityColor = voter.eligibility === 'Yes' ? '#4a9d7f' : '#c65d5d';
         return `
                     <tr>
@@ -306,6 +322,19 @@ function renderTable() {
         }
     };
     pagination.appendChild(nextBtn);
+}
+
+// Filter voters based on search query
+function filterVoters() {
+    if (!searchQuery) {
+        filteredVoters = null;
+        return;
+    }
+    filteredVoters = voters.filter(voter => {
+        return Object.values(voter).some(val =>
+            String(val).toLowerCase().includes(searchQuery)
+        );
+    });
 }
 
 // Edit voter - open modal
