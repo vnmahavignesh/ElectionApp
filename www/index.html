@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Registration System</title>
+    <!-- Cordova Script - MUST be first -->
+    <script type="text/javascript" src="cordova.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Voter Registration System</h1>
+            <p class="subtitle">Secure and Efficient Digital Voter Management</p>
+        </header>
+
+        <section class="form-section">
+            <h2 class="section-title">Register New Voter</h2>
+            <form id="voterForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" required placeholder="Enter full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dob">Date of Birth *</label>
+                        <input type="date" id="dob" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" readonly placeholder="Auto-calculated">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eligibility">Voter *</label>
+                        <select id="eligibility" required>
+                            <option value="" selected>Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="voterId">Voter ID *</label>
+                        <input type="text" id="voterId" required placeholder="Enter voter ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" required placeholder="Enter phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="district">District *</label>
+                        <input type="text" id="district" required placeholder="Enter district">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" required placeholder="Enter city">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="area">Area *</label>
+                        <input type="text" id="area" required placeholder="Enter area">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="street">Street *</label>
+                        <input type="text" id="street" required placeholder="Enter street">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pincode">Pincode *</label>
+                        <input type="text" id="pincode" required placeholder="Enter pincode" pattern="[0-9]{6}">
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="address">Full Address</label>
+                        <textarea id="address" placeholder="Enter complete address (optional)"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="resetForm">Reset Form</button>
+                    <button type="submit" class="btn btn-primary">Register Voter</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="table-section">
+            <div class="table-header">
+                <h2 class="section-title">Registered Voters</h2>
+                <div class="table-controls">
+                    <div class="rows-selector">
+                        <label for="rowsPerPage">Show:</label>
+                        <select id="rowsPerPage">
+                            <option value="5">5 rows</option>
+                            <option value="10" selected>10 rows</option>
+                            <option value="25">25 rows</option>
+                            <option value="50">50 rows</option>
+                            <option value="100">100 rows</option>
+                        </select>
+                    </div>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search voters...">
+                    </div>
+                    <button class="btn btn-success" id="exportCSV">Export CSV</button>
+                    <button class="btn btn-secondary" id="printTable">Print</button>
+                    <label for="importCSV" class="btn btn-primary" style="margin: 0;">
+                        Import CSV
+                        <input type="file" id="importCSV" accept=".csv" style="display: none;">
+                    </label>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Date of Birth</th>
+                            <th>Age</th>
+                            <th>Eligibility</th>
+                            <th>Voter ID</th>
+                            <th>Phone</th>
+                            <th>District</th>
+                            <th>City</th>
+                            <th>Area</th>
+                            <th>Street</th>
+                            <th>Pincode</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="12" class="empty-state">
+                                <div class="empty-state-icon">📋</div>
+                                <p>No voters registered yet. Fill out the form above to add your first entry.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination" id="pagination"></div>
+        </section>
+    </div>
+    <script src="cordova.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>
