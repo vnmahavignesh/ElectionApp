@@ -96,12 +96,22 @@ document.getElementById('voterForm').addEventListener('submit', (e) => {
         return;
     }
 
+    const voterIdValue = document.getElementById('voterId').value.trim();
+    // Check for duplicate Voter ID (case-insensitive, ignore spaces)
+    const isDuplicate = voters.some(voter =>
+        voter.voterId && voter.voterId.replace(/\s+/g, '').toLowerCase() === voterIdValue.replace(/\s+/g, '').toLowerCase()
+    );
+    if (isDuplicate) {
+        showToast('This voter ID already exists', 'error');
+        return;
+    }
+
     const formData = {
         name: document.getElementById('name').value,
         dob: document.getElementById('dob').value,
         age: document.getElementById('age').value,
         eligibility: document.getElementById('eligibility').value,
-        voterId: document.getElementById('voterId').value,
+        voterId: voterIdValue,
         phone: document.getElementById('phone').value,
         district: document.getElementById('district').value,
         city: document.getElementById('city').value,
